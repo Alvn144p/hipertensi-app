@@ -3,24 +3,19 @@ import joblib
 import pandas as pd
 
 st.set_page_config(page_title="Prediksi Risiko Hipertensi", layout="centered")
-st.title("Prediksi Risiko Hipertensi (RF & SVM + SMOTE)")
-st.divider()
+st.title("Prediksi Risiko Hipertensi (Deploy-Safe: RF & SVM)")
 
 # Pilih model
 model_choice = st.selectbox(
     "Pilih Model",
-    ["Random Forest (+SMOTE)", "SVM (+SMOTE)", "Random Forest (Baseline)", "SVM (Baseline)"]
+    ["Random Forest (Deploy)", "SVM (Deploy)"]
 )
 
 # Load model sesuai pilihan
-if model_choice == "Random Forest (+SMOTE)":
-    model = joblib.load("rf_smote.pkl")
-elif model_choice == "SVM (+SMOTE)":
-    model = joblib.load("svm_smote.pkl")
-elif model_choice == "Random Forest (Baseline)":
-    model = joblib.load("rf_baseline.pkl")
+if model_choice == "Random Forest (Deploy)":
+    model = joblib.load("rf_deploy.pkl")
 else:
-    model = joblib.load("svm_baseline.pkl")
+    model = joblib.load("svm_deploy.pkl")
 
 st.subheader("Input Data Pasien")
 
