@@ -3,38 +3,33 @@ import joblib
 import pandas as pd
 
 st.set_page_config(page_title="Prediksi Risiko Hipertensi", layout="centered")
-st.title("Prediksi Risiko Hipertensi (Deploy-Safe: RF & SVM)")
-st.divider()
 
-# Pilih model
-model_choice = st.selectbox(
-    "Pilih Model",
-    ["Random Forest (Deploy)", "SVM (Deploy)"]
-)
+st.title("Prediksi Risiko Hipertensi (Random Forest)")
 
-# Load model (DEPLOY-SAFE ONLY)
-if model_choice == "Random Forest (Deploy)":
-    model = joblib.load("rf_deploy.pkl")
-else:
-    model = joblib.load("svm_deploy.pkl")
+# Load model
+model = joblib.load("rf_deploy.pkl")  # pastikan file ini ada di repo
 
-st.subheader("Input Data Pasien")
+# Input UI
+male = st.selectbox("Jenis Kelamin", ["Perempuan", "Laki-laki"])
+male = 1 if male == "Laki-laki" else 0
 
-male = st.selectbox("Jenis Kelamin (Male=1, Female=0)", [0, 1])
-age = st.number_input("Age", min_value=1, max_value=120, value=30)
+age = st.number_input("Age", 18, 100, 34)
+currentSmoker = st.selectbox("Perokok?", ["Tidak", "Ya"])
+currentSmoker = 1 if currentSmoker == "Ya" else 0
 
-currentSmoker = st.selectbox("Perokok Aktif (No=0, Yes=1)", [0, 1])
-cigs = st.number_input("Cigarettes per Day", min_value=0, max_value=100, value=0)
+cigs = st.number_input("Cigarettes per Day", 0, 100, 0)
+bpmeds = st.selectbox("Minum Obat BP?", ["Tidak", "Ya"])
+bpmeds = 1 if bpmeds == "Ya" else 0
 
-BPMeds = st.selectbox("Konsumsi Obat Tekanan Darah (No=0, Yes=1)", [0, 1])
-diabetes = st.selectbox("Diabetes (No=0, Yes=1)", [0, 1])
+diabetes = st.selectbox("Diabetes?", ["Tidak", "Ya"])
+diabetes = 1 if diabetes == "Ya" else 0
 
-totchol = st.number_input("Total Cholesterol", min_value=100, max_value=600, value=200)
-sysbp = st.number_input("Systolic BP", min_value=80, max_value=250, value=120)
-diabp = st.number_input("Diastolic BP", min_value=50, max_value=150, value=80)
-bmi = st.number_input("BMI", min_value=10.0, max_value=60.0, value=22.0)
-heartrate = st.number_input("Heart Rate", min_value=40, max_value=200, value=70)
-glucose = st.number_input("Glucose", min_value=40, max_value=400, value=80)
+totchol = st.number_input("Total Cholesterol", 100, 400, 200)
+sysbp = st.number_input("Systolic BP", 80, 250, 120)
+diabp = st.number_input("Diastolic BP", 40, 150, 80)
+bmi = st.number_input("BMI", 10.0, 60.0, 22.0)
+heartrate = st.number_input("Heart Rate", 40, 150, 70)
+glucose = st.number_input("Glucose", 40, 400, 80)
 
 if st.button("Prediksi"):
     data = pd.DataFrame([{
@@ -42,7 +37,7 @@ if st.button("Prediksi"):
         "age": age,
         "currentSmoker": currentSmoker,
         "cigsPerDay": cigs,
-        "BPMeds": BPMeds,
+        "BPMeds": bpmeds,
         "diabetes": diabetes,
         "totChol": totchol,
         "sysBP": sysbp,
@@ -53,11 +48,7 @@ if st.button("Prediksi"):
     }])
 
     pred = model.predict(data)[0]
+    prob = model.predict_proba(data)[0][1]
 
-    if hasattr(model, "predict_proba"):
-        prob = model.predict_proba(data)[0][1]
-        st.success(f"Hasil: {'RISIKO HIPERTENSI' if pred==1 else 'TIDAK BERISIKO'}")
-        st.write(f"Probabilitas risiko: {prob:.2f}")
-    else:
-        st.success(f"Hasil: {'RISIKO HIPERTENSI' if pred==1 else 'TIDAK BERISIKO'}")
-        st.info("Model ini tidak menyediakan probabilitas.")
+    st.subheader(f"Hasil Prediksi: {'RISIKO HIPERTENSI' if pred==1 else 'TIDAK BERISIKO'}")
+    st.write(f"Probabilitas risiko: **{prob:.2%}**")
