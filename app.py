@@ -4,6 +4,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Prediksi Risiko Hipertensi", layout="centered")
 st.title("Prediksi Risiko Hipertensi (Deploy-Safe: RF & SVM)")
+st.divider()
 
 # Pilih model
 model_choice = st.selectbox(
@@ -11,7 +12,7 @@ model_choice = st.selectbox(
     ["Random Forest (Deploy)", "SVM (Deploy)"]
 )
 
-# Load model sesuai pilihan
+# Load model (DEPLOY-SAFE ONLY)
 if model_choice == "Random Forest (Deploy)":
     model = joblib.load("rf_deploy.pkl")
 else:
